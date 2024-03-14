@@ -1,0 +1,72 @@
+<%- include("partials/header.ejs")%>
+    <main>
+
+        <section class="py-5 text-center container">
+            <div class="row py-lg-5">
+                <div class="col-lg-6 col-md-8 mx-auto">
+                    <h1 class="fw-light">Album example</h1>
+                    <p class="lead text-body-secondary">Something short and leading about the collection below—its
+                        contents, the creator, etc. Make it short and sweet, but not too short so folks don’t simply
+                        skip over it entirely.</p>
+                    <p>
+                        <a href="#" class="btn btn-primary my-2">Main call to action</a>
+                        <a href="#" class="btn btn-secondary my-2">Secondary action</a>
+                    </p>
+                </div>
+            </div>
+        </section>
+        <form id="searchForm" class="form-inline d-flex m-5" action="/submit" method="POST">
+            <input id="searchInput" name="search" class="form-control mr-sm-2" type="search" placeholder="Search"
+                aria-label="Search">
+            <button class="btn btn-outline-success my-2 my-sm-0 ml-1" type="submit">Search</button>
+        </form>
+        <div class="container">
+            <div class="genres">
+                <h1 class="text-center">Genres</h1>
+                <div class="grid">
+
+
+
+                </div>
+            </div>
+
+            <div class="album py-6 bg-body-tertiary">
+                <div class="container py-2">
+
+                    <div class="row row-cols-2 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-3"
+                        id="content">
+                        <div class="col">
+                            <div>
+                                <div class="anime-image item">
+                                    <img src="https://media.istockphoto.com/id/1476198147/photo/colors-catalogue.webp?b=1&s=170667a&w=0&k=20&c=SXQLDsZ3DZmGx0go3CTYjmR_6z2PDN5pqLSER-oyWRY="
+                                        class="img-fluid rounded-top" alt="" />
+
+                                    <!-- !!PASS THE DATA ON THE ENDPOINT USING HREF!! -->
+                                </div>
+                                <div class="card-infos">
+                                    <div class="title">
+                                        <p class="card-title text-start" style="font-size: 0.8rem;">
+                                            Hello
+                                        </p>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+
+                </div>
+            </div>
+            <div class="container" style="display: grid; place-items:center">
+                <div id="load" class="spinner-grow text-dark" role="status">
+                    <span id="btn" class="sr-only"></span>
+                </div>
+                <span id="message" style="display: none;">You reached the end</span>
+            </div>
+
+
+
+    </main>
+    <%- include("partials/footer.ejs")%>

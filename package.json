@@ -1,0 +1,23 @@
+{
+  "name": "kitflix",
+  "version": "1.0.0",
+  "description": "Anime Streaming Site",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Lance Gom-os",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.6.7",
+    "body-parser": "^1.20.2",
+    "bootstrap": "^5.3.3",
+    "ejs": "^3.1.9",
+    "express": "^4.18.3",
+    "init": "^0.1.2",
+    "nodemon": "^3.1.0",
+    "tailwindcss": "^3.4.1"
+  }
+}

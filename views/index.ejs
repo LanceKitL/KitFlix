@@ -1,0 +1,238 @@
+<%- include("partials/header.ejs")%>
+    <main>
+
+        <section class="py-5 text-center container">
+            <div class="row py-lg-5">
+                <div class="col-lg-6 col-md-8 mx-auto">
+                    <h1 class="fw-light">Album example</h1>
+                    <p class="lead text-body-secondary">Something short and leading about the collection below—its
+                        contents, the creator, etc. Make it short and sweet, but not too short so folks don’t simply
+                        skip over it entirely.</p>
+                    <p>
+                        <a href="#" class="btn btn-primary my-2">Main call to action</a>
+                        <a href="#" class="btn btn-secondary my-2">Secondary action</a>
+                    </p>
+                </div>
+            </div>
+        </section>
+        <form id="searchForm" class="form-inline d-flex m-5" action="/submit" method="POST">
+            <input id="searchInput" name="search" class="form-control mr-sm-2" type="search" placeholder="Search"
+                aria-label="Search">
+            <button class="btn btn-outline-success my-2 my-sm-0 ml-1" type="submit">Search</button>
+        </form>
+        <div class="container">
+            <div class="genres">
+                <h1 class="text-center">Genres</h1>
+                <div class="grid">
+
+                    <% genresList.forEach(genre=> { %>
+                        <span>
+                            <a href="/genre/<%= genre.id %>">
+                                <%= genre.title %>
+                            </a>
+                        </span>
+
+                        <% }) %>
+                            </ul>
+
+                </div>
+            </div>
+
+            <div class="album py-6 bg-body-tertiary">
+                <div class="container py-2">
+                    <% if(searchItem){ %>
+                        <h1 class="mb-5 text-center">you searched for "<%= searchItem %>"
+                        </h1>
+                        <% }else if(selectedGenre !=="" ){ %>
+                            <h1 class="m-5 text-center ">
+                                <%= selectedGenre %> animes
+                            </h1>
+                            <% }else{ %>
+                                <h1 class="mb-5 text-center">Top Airing Animes</h1>
+
+                                <% } %>
+                                    <div class="row row-cols-2 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-3"
+                                        id="content">
+                                        <% item.results.forEach(item=> { %>
+                                            <div class="col">
+                                                <div>
+                                                    <div class="anime-image item">
+                                                        <!-- !!PASS THE DATA ON THE ENDPOINT USING HREF!! -->
+                                                        <a href="/stream/<%=item.id%>">
+                                                            <img src="<%= item.image %>">
+                                                        </a>
+                                                    </div>
+                                                    <div class="card-infos">
+                                                        <div class="title">
+                                                            <p class="card-title text-start" style="font-size: 0.8rem;">
+                                                                <%= item.title %>
+                                                            </p>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <% }) %>
+
+
+                                    </div>
+
+                </div>
+            </div>
+            <div class="container" style="display: grid; place-items:center">
+                <div id="load" class="spinner-grow text-dark" role="status">
+                    <span id="btn" class="sr-only"></span>
+                </div>
+                <span id="message" style="display: none;">You reached the end</span>
+            </div>
+
+            <!-- JS HEHE -->
+            <script>
+
+
+
+
+
+                document.addEventListener('DOMContentLoaded', function () {
+
+                    let pageCount = 2;
+
+                    const btn = document.getElementById("btn");
+                    const load = document.getElementById("load");
+                    const message = document.getElementById("message");
+                    let path = window.location.pathname;
+
+                    // Create an Intersection Observer instance
+                    let observer = new IntersectionObserver(function (entries) {
+                        entries.forEach(async function (entry) {
+                            if (entry.isIntersecting) {
+                                console.log('I see the loading');
+                                await determine();
+                            } else {
+                                console.log('Target element is not visible');
+                            }
+                        });
+                    }, { threshold: 0 });
+
+                    if (btn) {
+                        observer.observe(btn);
+                    }
+
+                    async function determine() {
+                        if (path.includes("genre")) {
+                            console.log("genre");
+                            await getGenre();
+                        } else if (path.includes("submit")) {
+                            console.log("Searching");
+                            await getSearched();
+                        } else {
+                            console.log("Top Airing");
+                            await fetchTopAiring();
+                        }
+                    }
+
+                    async function getGenre() {
+                        const content = document.getElementById("content");
+                        const url = await axios.get(`http://127.0.0.1:3000/anime/gogoanime${path}`, { params: { page: pageCount } });
+                        const res = url.data;
+                        pageCount = res.currentPage;
+                        console.log("CURRENT PAGE:" + pageCount)
+                        console.log("DOES IT HAVE A NEXT PAGE?" + res.hasNextPage);
+                        try {
+                            if (res.hasNextPage) {
+                                pageCount++;
+                                res.results.forEach(item => {
+                                    content.innerHTML += createItemHTML(item);
+                                });
+                            } else {
+                                noMoreData();
+                            }
+
+                        } catch (error) {
+                            console.log(error);
+                        }
+
+
+
+                    }
+
+                    async function getSearched() {
+                        const searchForm = document.getElementById("searchForm");
+                        const content = document.getElementById("content");
+                        let searchedItem = document.getElementById("searchInput").value;
+
+                        console.log("THE SEARCHED VALUE IS" + searchedItem)
+                        try {
+                            const url = await axios.get(`http://127.0.0.1:3000/anime/gogoanime/${searchedItem}`, { params: { page: pageCount } });
+                            const res = url.data;
+
+                            pageCount = res.currentPage;
+
+                            if (res.hasNextPage) {
+                                pageCount++;
+
+                                res.results.forEach(item => {
+                                    content.innerHTML += createItemHTML(item);
+                                });
+                            } else {
+                                noMoreData();
+                            }
+
+                        } catch (error) {
+                            console.error("Error fetching data:", error);
+
+                        }
+                    }
+
+
+                    async function fetchTopAiring() {
+                        const content = document.getElementById("content");
+                        const url = await axios.get("http://127.0.0.1:3000/anime/gogoanime/top-airing", { params: { page: pageCount } });
+                        const res = url.data;
+                        pageCount = res.currentPage;
+                        console.log("CURRENT PAGE:" + pageCount)
+                        console.log("DOES IT HAVE A NEXT PAGE?" + res.hasNextPage);
+                        if (res.hasNextPage) {
+                            pageCount++;
+                            res.results.forEach(item => {
+                                content.innerHTML += createItemHTML(item);
+                            });
+                        } else {
+                            noMoreData();
+                        }
+                    }
+
+                    function createItemHTML(item) {
+                        return `
+                            <div class="col">
+                                <div>
+                                    <div class="anime-image item">
+                                        <a href="/stream/${item.id}">
+                                            <img src="${item.image}">
+                                        </a>
+                                    </div>
+                                    <div class="card-infos">
+                                        <div class="title">
+                                            <p class="card-title text-start" style="font-size: 0.8rem;">
+                                                ${item.title}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>`;
+                    }
+
+                    function noMoreData() {
+                        load.style.display = "none";
+                        message.style.display = "block";
+                        message.style.color = "red";
+
+                        setTimeout(function () {
+                            message.style.display = "none";
+                        }, 2000);
+                    }
+                });
+            </script>
+
+    </main>
+    <%- include("partials/footer.ejs")%>

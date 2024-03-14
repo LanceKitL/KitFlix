@@ -1,0 +1,75 @@
+* {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+}
+
+
+body,
+html {
+    height: 100dvh;
+}
+
+
+
+.anime-image {
+    object-fit: cover;
+    cursor: pointer;
+    overflow: hidden;
+    border-radius: 7px;
+
+}
+
+.anime-image img {
+    height: 350px;
+
+    width: 100%;
+    box-shadow: 10px 10px 8px #888888;
+    transition: all .3s ease-in-out;
+}
+
+.anime-image img:hover {
+
+    transform: scale(1.03);
+}
+
+.card-infos {
+    padding: 10px 0px;
+    height: 4rem;
+
+}
+
+.btnn {
+    display: grid;
+    place-items: center;
+}
+
+a {
+    text-decoration: none;
+    color: rgba(0, 0, 0, 0.473);
+    transition: all .3s ease-in-out;
+}
+
+a:hover {
+    color: black;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    margin-bottom: 3em;
+}
+
+
+
+/* FOR STREAM.EJS */
+
+
+
+
+@media only screen and (max-width: 575px) {
+    .anime-image img {
+        height: 250px;
+        width: 100%;
+    }
+}

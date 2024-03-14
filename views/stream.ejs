@@ -1,0 +1,180 @@
+<%- include("partials/header.ejs")%>
+    <style>
+        * {
+            scroll-behavior: smooth;
+        }
+
+        a {
+            text-decoration: none;
+            color: rgba(255, 255, 255, 0.685);
+            transition: all .3s ease-in-out;
+        }
+
+        a:hover {
+            opacity: .6;
+        }
+
+
+        :focus {
+            outline: 0;
+            border-color: #2260ff;
+            box-shadow: 0 0 0 4px #b5c9fc;
+        }
+
+        .mydict {
+            margin: 5px 0px;
+
+        }
+
+        .mydict div {
+            display: flex;
+            flex-wrap: wrap;
+            margin-top: 0.5rem;
+            justify-content: start;
+        }
+
+        .mydict input[type="radio"] {
+            clip: rect(0 0 0 0);
+            clip-path: inset(100%);
+            height: 1px;
+            overflow: hidden;
+            position: absolute;
+            white-space: nowrap;
+            width: 1px;
+            transition: all .2s ease-in-out;
+        }
+
+        .mydict input[type="radio"]:checked+span {
+            text-decoration: wavy;
+            z-index: 1;
+            color: red;
+            transition: all .2s ease-in-out;
+
+        }
+
+
+        label span {
+            cursor: pointer;
+            color: white;
+            padding: 5px;
+        }
+
+        #watch {
+            background-color: rgba(128, 128, 128, 0.103);
+            filter: blur(5);
+            border-radius: 25px;
+            box-shadow: 10px 5px 15px rgba(0, 0, 0, 0.226);
+        }
+
+
+        iframe {
+            border-radius: 25px;
+
+        }
+    </style>
+    <div class="bg-dark p-5 container">
+        <div id="watch">
+            <div id="box" class="mb-5"">
+                <div style=" border-radius: 10px; " class=" ratio ratio-16x9 text-center mt-4 mb-4 ">
+                <iframe class=" embed-responsive-item" src="" style="max-width: 100%;height: 100%;" allowfullscreen>
+                </iframe>
+            </div>
+        </div>
+    </div>
+    <% if(item){ %>
+
+        <div class="d-flex align-items-start justify-content-between">
+            <div class="left-side">
+                <div class="title">
+                    <h2 style="color: white;">
+                        <%= item.title %>
+                    </h2>
+                </div>
+                <div class="infos">
+                    <span style="color: rgba(255, 255, 255, 0.685);">
+                        <%=item.releaseDate %> ||
+                    </span>
+                    <% for(let i=0; i < item.genres.length; i++){%>
+                        <span style="color: rgba(255, 255, 255, 0.685);">
+                            <a href="/genre/<%= item.genres[i] %>">
+                                <%= item.genres[i] %>,
+                            </a>
+                        </span>
+                        <% } %>
+                            <span style="color: rgba(255, 255, 255, 0.685);">
+                                || <%= item.totalEpisodes %> Episodes ||
+                            </span>
+                            <span style="color: rgb(58, 109, 56);">
+                                <%= item.status %>
+                            </span>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="episodes my-5">
+            <h5 style="color: rgba(255, 255, 255, 0.685);">
+                Select Episode
+            </h5>
+
+
+            <div class="mydict">
+                <div>
+                    <% item.episodes.forEach(ep=> { %>
+
+                        <label>
+                            <input type="radio" name="episode" class="episode" value="<%= ep.id %>">
+                            <span>
+                                <%= ep.number %>
+
+                            </span>
+                        </label>
+                        <% }) %>
+                </div>
+            </div>
+        </div>
+
+        <div class="description my-5">
+            <p style="color:rgba(255, 255, 255, 0.685);">
+                <%=item.description %>
+            </p>
+        </div>
+        <% } %>
+            </div>
+
+
+            <script>
+                document.addEventListener("DOMContentLoaded", function () {
+                    const container = document.getElementById("watch");
+                    const episodes = document.querySelectorAll(".episode");
+                    let selectedEpisode = 1;
+
+                    episodes.forEach(episode => {
+                        episode.addEventListener("click", async () => {
+                            selectedEpisode = episode.value;
+                            console.log(selectedEpisode);
+                            await getEpisode(selectedEpisode);
+                        });
+                    });
+
+                    async function getEpisode(selectedEpisode) {
+                        try {
+                            const response = await axios.get(`http://127.0.0.1:3000/anime/gogoanime/watch/${selectedEpisode}`, { params: { server: "gogocdn" } });
+                            const episodeData = response.data.headers;
+
+                            container.innerHTML =
+                                `
+                            <div id="box" class="mb-5">
+                                <div style="border-radius: 10px;" class="ratio ratio-16x9 text-center mt-4 mb-4 ">
+                                    <iframe  class="embed-responsive-item" src="${episodeData.Referer}" style="max-width: 100%;height: 100%;  overflow: hidden;"
+                                    allowfullscreen></iframe>
+                                </div>
+                            </div>
+                            `;
+                        } catch (error) {
+                            console.error("Error fetching episode:", error);
+                        }
+                    }
+                });
+            </script>
+            <%- include("partials/footer.ejs")%>
